@@ -16,11 +16,13 @@ class App {
     this.modeButtons = document.querySelectorAll('.mode-button');
     this.interactionButtons = document.querySelectorAll('.interaction-button');
     this.themeToggle = document.getElementById('theme-toggle');
+    this.modelSelector = document.getElementById('model-selector');
     
     // State
     this.selectedLang = 'en'; // Default language
     this.selectedMode = 'normal'; // Default mode
     this.selectedInteraction = 'conversation'; // Default interaction type
+    this.selectedModel = this.modelSelector ? this.modelSelector.value : 'gpt-4'; // Default model
     
     // Initialize modules
     this.initializeModules();
@@ -87,6 +89,11 @@ class App {
     this.interactionButtons.forEach(button => {
       button.addEventListener('click', this.handleInteractionChange.bind(this, button));
     });
+    
+    // Model selection
+    if (this.modelSelector) {
+      this.modelSelector.addEventListener('change', this.handleModelChange.bind(this));
+    }
   }
 
   /**
@@ -134,7 +141,8 @@ class App {
       message: text,
       targetLang: this.selectedLang,
       responseMode: this.selectedMode,
-      interactionType: this.selectedInteraction
+      interactionType: this.selectedInteraction,
+      model: this.selectedModel
     });
     
     // Clear input
@@ -249,6 +257,26 @@ class App {
    */
   handleThemeChange(newTheme) {
     this.messageDisplay.addSystemMessage(`Switched to ${newTheme.toUpperCase()} theme`);
+  }
+  
+  /**
+   * Handle model change
+   * @param {Event} event - Change event from selector
+   */
+  handleModelChange(event) {
+    const previousModel = this.selectedModel;
+    this.selectedModel = event.target.value;
+    
+    // Notify server about model change
+    this.socketClient.notifySettingsChange({
+      type: 'model',
+      from: previousModel,
+      to: this.selectedModel
+    });
+    
+    // Add system message about model change
+    const modelName = this.selectedModel.toUpperCase();
+    this.messageDisplay.addSystemMessage(`Switched to ${modelName} model`);
   }
 
   /**

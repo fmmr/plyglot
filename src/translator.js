@@ -52,18 +52,19 @@ const INTERACTION_TYPES = {
  * @param {string} mode - Response mode (normal, poetic)
  * @param {string} interactionType - Interaction type (translate, conversation)
  * @param {Array} chatHistory - Previous messages in the conversation (for conversation mode)
+ * @param {string} model - Override the default model (optional)
  * @returns {Promise<Object>} - Object containing response text and usage statistics
  */
-async function processMessage(message, targetLang, mode = RESPONSE_MODES.normal, interactionType = INTERACTION_TYPES.translate, chatHistory = []) {
+async function processMessage(message, targetLang, mode = RESPONSE_MODES.normal, interactionType = INTERACTION_TYPES.translate, chatHistory = [], model = null) {
   if (!message || !targetLang || !LANGUAGES[targetLang]) {
     throw new Error('Invalid message or language');
   }
 
   let response;
   if (interactionType === INTERACTION_TYPES.translate) {
-    response = await translateMessage(message, targetLang, mode);
+    response = await translateMessage(message, targetLang, mode, model);
   } else if (interactionType === INTERACTION_TYPES.conversation) {
-    response = await conversationResponse(message, targetLang, mode, chatHistory);
+    response = await conversationResponse(message, targetLang, mode, chatHistory, model);
   } else {
     throw new Error('Invalid interaction type');
   }
@@ -76,9 +77,10 @@ async function processMessage(message, targetLang, mode = RESPONSE_MODES.normal,
  * @param {string} message - Message to translate
  * @param {string} targetLang - Target language code (en, fr, no)
  * @param {string} mode - Response mode (normal, poetic)
+ * @param {string} overrideModel - Override the default model (optional)
  * @returns {Promise<string>} - Translated message
  */
-async function translateMessage(message, targetLang, mode = RESPONSE_MODES.normal) {
+async function translateMessage(message, targetLang, mode = RESPONSE_MODES.normal, overrideModel = null) {
   try {
     let systemContent = `You are a professional translator specializing in ${LANGUAGES[targetLang]}.`;
     let additionalInstructions = '';
@@ -97,8 +99,8 @@ async function translateMessage(message, targetLang, mode = RESPONSE_MODES.norma
     
     Translation:`;
 
-    // Get the configured model for translation
-    const model = DEFAULT_MODELS.translation;
+    // Get the model to use - client selection overrides default
+    const model = overrideModel || DEFAULT_MODELS.translation;
     
     logger.api(`Using model ${model} for translation to ${targetLang}`);
 
@@ -140,9 +142,10 @@ async function translateMessage(message, targetLang, mode = RESPONSE_MODES.norma
  * @param {string} targetLang - Target language code (en, fr, no)
  * @param {string} mode - Response mode (normal, poetic)
  * @param {Array} chatHistory - Previous messages in the conversation
+ * @param {string} overrideModel - Override the default model (optional)
  * @returns {Promise<string>} - Response message in target language
  */
-async function conversationResponse(message, targetLang, mode = RESPONSE_MODES.normal, chatHistory = []) {
+async function conversationResponse(message, targetLang, mode = RESPONSE_MODES.normal, chatHistory = [], overrideModel = null) {
   try {
     let systemPrompt = `You are a helpful, friendly AI assistant who responds in ${LANGUAGES[targetLang]}. Always respond in ${LANGUAGES[targetLang]} regardless of the language the user writes in.`;
     
@@ -169,8 +172,8 @@ async function conversationResponse(message, targetLang, mode = RESPONSE_MODES.n
       content: message
     });
     
-    // Get the configured model for conversation
-    const model = DEFAULT_MODELS.conversation;
+    // Get the model to use - client selection overrides default
+    const model = overrideModel || DEFAULT_MODELS.conversation;
     
     logger.api(`Using model ${model} for conversation in ${targetLang}`);
     

@@ -54,12 +54,13 @@ class SocketManager {
    */
   async _handleChatMessage(socket, msgData) {
     try {
-      const { message, targetLang, responseMode, interactionType } = msgData;
+      const { message, targetLang, responseMode, interactionType, model } = msgData;
       
       logger.message(`Received message from client ${socket.id}`, {
         targetLang,
         responseMode,
         interactionType,
+        model: model || 'default',
         messageLength: message.length
       });
       
@@ -67,7 +68,7 @@ class SocketManager {
       const chatHistory = this.chatHistoryManager.getClientHistory(socket.id);
       
       // Process the message based on interaction type and response mode
-      logger.api(`Calling OpenAI API (${interactionType} mode, ${targetLang} language, ${responseMode} style)`);
+      logger.api(`Calling OpenAI API (${interactionType} mode, ${targetLang} language, ${responseMode} style, ${model || 'default'} model)`);
       const startTime = Date.now();
       
       const processResult = await processMessage(
@@ -75,7 +76,8 @@ class SocketManager {
         targetLang,
         responseMode || RESPONSE_MODES.normal,
         interactionType || INTERACTION_TYPES.translate,
-        chatHistory
+        chatHistory,
+        model
       );
       
       const apiCallDuration = Date.now() - startTime;

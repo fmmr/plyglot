@@ -161,6 +161,37 @@ h1 {
   border-color: var(--button-active-bg);
 }
 
+/* Model selector styles */
+.model-selector {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--selector-border);
+  background-color: var(--button-bg);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--button-text);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 30px;
+  min-width: 160px;
+  max-width: 100%;
+}
+
+[data-theme="dark"] .model-selector {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23eee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.model-selector:focus {
+  outline: none;
+  border-color: var(--button-active-bg);
+  box-shadow: 0 0 0 2px rgba(7, 94, 84, 0.2);
+}
+
 /* Theme toggle button */
 #theme-toggle {
   background-color: var(--button-bg);
@@ -479,6 +510,14 @@ footer {
   .mode-button, .interaction-button {
     padding: 4px 8px;
     font-size: 0.8rem;
+  }
+  
+  .model-selector {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    padding-right: 25px;
+    background-position: right 6px center;
+    min-width: 120px;
   }
   
   h1 {
