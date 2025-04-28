@@ -219,7 +219,15 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Scroll to bottom of chat
   function scrollToBottom() {
-    messages.scrollTop = messages.scrollHeight;
+    // Use setTimeout to ensure this runs after DOM updates are complete
+    setTimeout(() => {
+      messages.scrollTop = messages.scrollHeight;
+      
+      // Additional check to ensure we're at the bottom
+      if (messages.scrollTop < messages.scrollHeight - messages.clientHeight) {
+        messages.scrollTop = messages.scrollHeight;
+      }
+    }, 0);
   }
   
   // Theme management
