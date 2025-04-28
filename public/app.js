@@ -154,7 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
     hideTypingIndicator();
     
     // Add the response message
-    addMessage(response, 'bot');
+    addMessage(response.text, 'bot');
+    
+    // Update the usage statistics
+    updateUsageStats(response.stats, response.usage);
+    
     scrollToBottom();
   });
   
@@ -263,5 +267,79 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add system message
     addSystemMessage(`Switched to ${newTheme.toUpperCase()} theme`);
   }
+  
+  // Update usage statistics display
+  function updateUsageStats(globalStats, lastRequestStats) {
+    // Check if usage-stats container exists, if not create it
+    let statsContainer = document.getElementById('usage-stats');
+    
+    if (!statsContainer) {
+      // Create usage stats container
+      statsContainer = document.createElement('div');
+      statsContainer.id = 'usage-stats';
+      statsContainer.classList.add('usage-stats');
+      
+      // Create toggle button
+      const toggleButton = document.createElement('button');
+      toggleButton.id = 'stats-toggle';
+      toggleButton.classList.add('stats-toggle');
+      toggleButton.textContent = 'API Usage';
+      toggleButton.addEventListener('click', () => {
+        statsContainer.classList.toggle('expanded');
+      });
+      
+      // Create stats content container
+      const statsContent = document.createElement('div');
+      statsContent.id = 'stats-content';
+      statsContent.classList.add('stats-content');
+      
+      // Add elements to DOM
+      statsContainer.appendChild(toggleButton);
+      statsContainer.appendChild(statsContent);
+      document.querySelector('.app-container').appendChild(statsContainer);
+    }
+    
+    // Update stats content
+    const statsContent = document.getElementById('stats-content');
+    
+    // Format the statistics HTML
+    let statsHTML = `
+      <div class="stats-section">
+        <h3>Session Totals</h3>
+        <p>Total Requests: ${globalStats.totalRequests}</p>
+        <p>Total Tokens: ${globalStats.totalTokens}</p>
+        <p>Input Tokens: ${globalStats.promptTokens}</p>
+        <p>Output Tokens: ${globalStats.completionTokens}</p>
+        <p>Avg Tokens/Request: ${globalStats.avgTokensPerRequest}</p>
+      </div>
+      <div class="stats-section">
+        <h3>By Type</h3>
+        <p>Translations: ${globalStats.translationRequests}</p>
+        <p>Conversations: ${globalStats.conversationRequests}</p>
+      </div>
+    `;
+    
+    // Add last request info if available
+    if (lastRequestStats) {
+      statsHTML += `
+        <div class="stats-section">
+          <h3>Last Request</h3>
+          <p>Total: ${lastRequestStats.total_tokens} tokens</p>
+          <p>Input: ${lastRequestStats.prompt_tokens} tokens</p>
+          <p>Output: ${lastRequestStats.completion_tokens} tokens</p>
+        </div>
+      `;
+    }
+    
+    statsContent.innerHTML = statsHTML;
+  }
+
+  // Request initial usage stats
+  socket.emit('get usage stats');
+  
+  // Handle usage stats response
+  socket.on('usage stats', (stats) => {
+    updateUsageStats(stats, null);
+  });
   
 });

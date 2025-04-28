@@ -1,5 +1,6 @@
 const { OpenAI } = require('openai');
 require('dotenv').config();
+const { trackUsage } = require('./usage-tracker');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAIKEY
@@ -32,20 +33,23 @@ const INTERACTION_TYPES = {
  * @param {string} mode - Response mode (normal, poetic)
  * @param {string} interactionType - Interaction type (translate, conversation)
  * @param {Array} chatHistory - Previous messages in the conversation (for conversation mode)
- * @returns {Promise<string>} - Response message
+ * @returns {Promise<Object>} - Object containing response text and usage statistics
  */
 async function processMessage(message, targetLang, mode = RESPONSE_MODES.normal, interactionType = INTERACTION_TYPES.translate, chatHistory = []) {
   if (!message || !targetLang || !LANGUAGES[targetLang]) {
     throw new Error('Invalid message or language');
   }
 
+  let response;
   if (interactionType === INTERACTION_TYPES.translate) {
-    return translateMessage(message, targetLang, mode);
+    response = await translateMessage(message, targetLang, mode);
   } else if (interactionType === INTERACTION_TYPES.conversation) {
-    return conversationResponse(message, targetLang, mode, chatHistory);
+    response = await conversationResponse(message, targetLang, mode, chatHistory);
   } else {
     throw new Error('Invalid interaction type');
   }
+
+  return response;
 }
 
 /**
@@ -90,7 +94,16 @@ async function translateMessage(message, targetLang, mode = RESPONSE_MODES.norma
       max_tokens: 500
     });
 
-    return response.choices[0].message.content.trim();
+    // Track API usage
+    if (response.usage) {
+      trackUsage(response.usage, 'translation');
+    }
+
+    // Return both the translated text and token usage
+    return {
+      text: response.choices[0].message.content.trim(),
+      usage: response.usage || null
+    };
   } catch (error) {
     console.error('OpenAI API error:', error);
     throw new Error('Translation service error');
@@ -139,7 +152,16 @@ async function conversationResponse(message, targetLang, mode = RESPONSE_MODES.n
       max_tokens: 500
     });
 
-    return response.choices[0].message.content.trim();
+    // Track API usage
+    if (response.usage) {
+      trackUsage(response.usage, 'conversation');
+    }
+
+    // Return both the response text and token usage
+    return {
+      text: response.choices[0].message.content.trim(),
+      usage: response.usage || null
+    };
   } catch (error) {
     console.error('OpenAI API error:', error);
     throw new Error('Conversation service error');

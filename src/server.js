@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
 const { processMessage, RESPONSE_MODES, INTERACTION_TYPES } = require('./translator');
+const { getFormattedStats } = require('./usage-tracker');
 require('dotenv').config();
 
 const app = express();
@@ -11,6 +12,11 @@ const io = socketIo(server);
 
 // Serve static files
 app.use(express.static(path.join(__dirname, '../public')));
+
+// API endpoint for usage stats
+app.get('/api/usage-stats', (req, res) => {
+  res.json(getFormattedStats());
+});
 
 // Store chat history for each client
 const chatHistories = {};
@@ -30,13 +36,16 @@ io.on('connection', (socket) => {
       const chatHistory = chatHistories[socket.id] || [];
       
       // Process the message based on interaction type and response mode
-      const response = await processMessage(
+      const processResult = await processMessage(
         message, 
         targetLang,
         responseMode || RESPONSE_MODES.normal,
         interactionType || INTERACTION_TYPES.translate,
         chatHistory
       );
+      
+      // Extract the text response from the result
+      const responseText = processResult.text;
       
       // If in conversation mode, store the interaction in chat history
       if (interactionType === INTERACTION_TYPES.conversation) {
@@ -49,7 +58,7 @@ io.on('connection', (socket) => {
         // Add assistant response to history
         chatHistories[socket.id].push({
           role: 'assistant',
-          content: response
+          content: responseText
         });
         
         // Limit history to last 10 messages (5 exchanges)
@@ -58,7 +67,15 @@ io.on('connection', (socket) => {
         }
       }
       
-      socket.emit('chat response', response);
+      // Get updated usage statistics
+      const usageStats = getFormattedStats();
+      
+      // Send the response and usage statistics to the client
+      socket.emit('chat response', {
+        text: responseText,
+        usage: processResult.usage,
+        stats: usageStats
+      });
     } catch (error) {
       console.error('Processing error:', error);
       socket.emit('error', { message: 'Processing failed' });
@@ -70,6 +87,11 @@ io.on('connection', (socket) => {
     console.log(`Client ${socket.id} switched to ${data.interactionType} mode`);
     // We don't need to do anything special here as the chat history is already preserved
     // by keeping the chatHistories[socket.id] intact regardless of mode changes
+  });
+
+  // Handle request for usage statistics
+  socket.on('get usage stats', () => {
+    socket.emit('usage stats', getFormattedStats());
   });
 
   socket.on('disconnect', () => {
