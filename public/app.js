@@ -6,10 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const langButtons = document.querySelectorAll('.lang-flag');
   const modeButtons = document.querySelectorAll('.mode-button');
   const interactionButtons = document.querySelectorAll('.interaction-button');
+  const themeToggle = document.getElementById('theme-toggle');
   
   let selectedLang = 'en'; // Default language
   let selectedMode = 'normal'; // Default mode
   let selectedInteraction = 'translate'; // Default interaction type
+  
+  // Set initial theme based on user preference or system preference
+  initTheme();
   
   // Set initial active language
   document.querySelector(`[data-lang="${selectedLang}"]`).classList.add('active');
@@ -178,5 +182,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Scroll to bottom of chat
   function scrollToBottom() {
     messages.scrollTop = messages.scrollHeight;
+  }
+  
+  // Theme management
+  function initTheme() {
+    // Check if user preference is stored
+    const savedTheme = localStorage.getItem('plyglot-theme');
+    
+    if (savedTheme) {
+      // Apply saved theme
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      // Check system preference
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const defaultTheme = prefersDark ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', defaultTheme);
+      localStorage.setItem('plyglot-theme', defaultTheme);
+    }
+    
+    // Set up theme toggle button
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+  
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    // Apply new theme
+    document.documentElement.setAttribute('data-theme', newTheme);
+    
+    // Save preference
+    localStorage.setItem('plyglot-theme', newTheme);
+    
+    // Add system message
+    addSystemMessage(`Switched to ${newTheme.toUpperCase()} theme`);
   }
 });

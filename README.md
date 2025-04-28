@@ -11,6 +11,7 @@ A multilingual chat application for mobile terminals that translates messages in
   - Conversation: Responds as a chatbot in the selected language
 - Two response styles: Standard and Poetic
 - Real-time communication using OpenAI's GPT models
+- Light and dark theme support with system preference detection
 - Clean and responsive UI
 
 ## Requirements
@@ -61,7 +62,8 @@ The app will be available at `http://localhost:3000`
    - Translate: Simply translates your text to the selected language
    - Converse: Interacts as a chatbot, responding to your messages in context
 5. Type your message in any language
-6. Receive responses in your selected language and style
+6. Toggle between light and dark themes using the theme selector
+7. Receive responses in your selected language and style
 
 ## Testing
 
