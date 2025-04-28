@@ -15,9 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set initial theme based on user preference or system preference
   initTheme();
   
-  // Initialize voice input button
-  initVoiceInput();
-  
   // Set initial active language
   document.querySelector(`[data-lang="${selectedLang}"]`).classList.add('active');
   
@@ -259,62 +256,4 @@ document.addEventListener('DOMContentLoaded', () => {
     addSystemMessage(`Switched to ${newTheme.toUpperCase()} theme`);
   }
   
-  // Voice input functionality
-  function initVoiceInput() {
-    const voiceButton = document.getElementById('voice-input-button');
-    const voiceStatus = document.getElementById('voice-status');
-    
-    // Check if browser supports speech recognition
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      // Hide voice button if not supported
-      voiceButton.style.display = 'none';
-      return;
-    }
-    
-    // Initialize speech recognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    
-    // Configure speech recognition
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    
-    // Event listeners for speech recognition
-    voiceButton.addEventListener('click', () => {
-      if (voiceButton.classList.contains('recording')) {
-        // Stop recording
-        recognition.stop();
-      } else {
-        // Start recording
-        recognition.start();
-        voiceButton.classList.add('recording');
-        voiceStatus.textContent = 'Listening...';
-      }
-    });
-    
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      input.value = transcript;
-      voiceStatus.textContent = '';
-      voiceButton.classList.remove('recording');
-      
-      // Automatically send message after voice input
-      if (transcript.trim()) {
-        sendMessage(transcript);
-      }
-    };
-    
-    recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-      voiceStatus.textContent = 'Error: ' + event.error;
-      voiceButton.classList.remove('recording');
-    };
-    
-    recognition.onend = () => {
-      voiceButton.classList.remove('recording');
-      if (voiceStatus.textContent === 'Listening...') {
-        voiceStatus.textContent = '';
-      }
-    };
-  }
 });

@@ -322,7 +322,7 @@ footer {
   outline: none;
 }
 
-#send-button, #voice-input-button {
+#send-button {
   background-color: var(--button-active-bg);
   color: var(--button-active-text);
   border: none;
@@ -334,39 +334,6 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-#voice-input-button {
-  background-color: var(--button-bg);
-  color: var(--button-active-bg);
-  border: 1px solid var(--button-active-bg);
-}
-
-#voice-input-button.recording {
-  background-color: #ff4136;
-  color: white;
-  border-color: #ff4136;
-  animation: pulse-recording 1.5s infinite;
-}
-
-.voice-status {
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--system-msg-text);
-  margin-top: 5px;
-  height: 20px;
-}
-
-@keyframes pulse-recording {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
 
 #send-button::after {
@@ -382,7 +349,7 @@ footer {
     padding: 8px;
   }
   
-  #send-button, #voice-input-button {
+  #send-button {
     width: 36px;
     height: 36px;
   }
