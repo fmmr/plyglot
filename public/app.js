@@ -10,13 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let selectedLang = 'en'; // Default language
   let selectedMode = 'normal'; // Default mode
-  let selectedInteraction = 'translate'; // Default interaction type
+  let selectedInteraction = 'conversation'; // Default interaction type - now converse
   
   // Set initial theme based on user preference or system preference
   initTheme();
   
   // Set initial active language
   document.querySelector(`[data-lang="${selectedLang}"]`).classList.add('active');
+  
+  // Add startup welcome message
+  addSystemMessage("Welcome to Plyglot! Using CONVERSE mode by default. Select a language and start chatting.");
+  
+  // Inform server of default conversation mode
+  socket.emit('switch mode', { interactionType: 'conversation' });
   
   // Language selection
   langButtons.forEach(button => {
