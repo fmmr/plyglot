@@ -87,9 +87,10 @@ h1 {
 .language-selector {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  max-width: 70%;
+  gap: 6px;
+  max-width: 75%;
   justify-content: flex-end;
+  margin-left: auto;
 }
 
 .lang-flag {
@@ -414,6 +415,53 @@ footer {
   font-size: 0.8rem;
 }
 
+/* Styling for language filter buttons */
+.language-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0;
+  padding: 0 10px;
+  justify-content: center;
+}
+
+.language-filter button {
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--selector-border);
+  background-color: var(--button-bg);
+  font-size: 0.75rem;
+  cursor: pointer;
+  color: var(--button-text);
+}
+
+.language-filter button.active {
+  background-color: var(--button-active-bg);
+  color: var(--button-active-text);
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 5px;
+  }
+  
+  h1 {
+    margin-bottom: 8px;
+  }
+  
+  .language-selector {
+    max-width: 100%;
+    justify-content: center;
+  }
+  
+  .lang-flag {
+    width: 24px;
+    height: 18px;
+  }
+}
+
 @media (max-width: 480px) {
   .message {
     max-width: 90%;
@@ -456,5 +504,10 @@ footer {
   
   .usage-stats.expanded {
     width: 200px;
+  }
+  
+  .lang-flag {
+    width: 22px;
+    height: 16px;
   }
 }

@@ -222,7 +222,18 @@ document.addEventListener('DOMContentLoaded', () => {
       'es': 'Spanish',
       'sv': 'Swedish',
       'da': 'Danish',
-      'de': 'German'
+      'de': 'German',
+      'it': 'Italian',
+      'pt': 'Portuguese',
+      'nl': 'Dutch',
+      'ru': 'Russian',
+      'zh': 'Chinese',
+      'ja': 'Japanese',
+      'ko': 'Korean',
+      'ar': 'Arabic',
+      'hi': 'Hindi',
+      'tr': 'Turkish',
+      'pl': 'Polish'
     };
     return langNames[langCode] || langCode.toUpperCase();
   }
