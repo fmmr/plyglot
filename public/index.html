@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plyglot</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>Plyglot</h1>
+      <div class="language-selector">
+        <button class="lang-flag" data-lang="en">
+          <img src="flags/en.svg" alt="English" title="English">
+        </button>
+        <button class="lang-flag" data-lang="fr">
+          <img src="flags/fr.svg" alt="French" title="French">
+        </button>
+        <button class="lang-flag" data-lang="no">
+          <img src="flags/no.svg" alt="Norwegian" title="Norwegian">
+        </button>
+        <button class="lang-flag" data-lang="es">
+          <img src="flags/es.svg" alt="Spanish" title="Spanish">
+        </button>
+        <button class="lang-flag" data-lang="sv">
+          <img src="flags/sv.svg" alt="Swedish" title="Swedish">
+        </button>
+        <button class="lang-flag" data-lang="da">
+          <img src="flags/da.svg" alt="Danish" title="Danish">
+        </button>
+        <button class="lang-flag" data-lang="de">
+          <img src="flags/de.svg" alt="German" title="German">
+        </button>
+      </div>
+    </header>
+    
+    <div class="selectors-container">
+      <div class="selector">
+        <div class="selector-label">Style:</div>
+        <div class="selector-options">
+          <button class="mode-button active" data-mode="normal">Standard</button>
+          <button class="mode-button" data-mode="poetic">Poetic</button>
+        </div>
+      </div>
+      
+      <div class="selector">
+        <div class="selector-label">Type:</div>
+        <div class="selector-options">
+          <button class="interaction-button active" data-interaction="translate">Translate</button>
+          <button class="interaction-button" data-interaction="conversation">Converse</button>
+        </div>
+      </div>
+    </div>
+    
+    <main class="chat-container">
+      <div id="messages"></div>
+    </main>
+    
+    <footer>
+      <form id="chat-form">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button type="submit" id="send-button">Send</button>
+      </form>
+    </footer>
+  </div>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
