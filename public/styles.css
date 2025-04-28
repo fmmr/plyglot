@@ -178,8 +178,36 @@ h1 {
   background-repeat: no-repeat;
   background-position: right 8px center;
   padding-right: 30px;
-  min-width: 160px;
+  min-width: 180px;
   max-width: 100%;
+}
+
+/* When model selector is opened, adjust the height and position */
+.model-selector:focus option {
+  font-size: 0.85rem;
+  padding: 5px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+}
+
+/* Style for option groups */
+.model-selector optgroup {
+  font-weight: bold;
+  font-style: normal;
+  color: var(--header-bg);
+  padding: 5px;
+  background-color: var(--selector-bg);
+}
+
+.model-selector option {
+  font-weight: normal;
+  padding-left: 10px;
+}
+
+/* For browsers that support it, limit the dropdown height and add scrolling */
+.model-selector[size] {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 [data-theme="dark"] .model-selector {
@@ -518,6 +546,17 @@ footer {
     padding-right: 25px;
     background-position: right 6px center;
     min-width: 120px;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* When model selector is opened on mobile */
+  .model-selector:focus {
+    overflow: visible;
+    position: relative;
+    z-index: 1000;
   }
   
   h1 {

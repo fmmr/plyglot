@@ -96,11 +96,29 @@
         <div class="selector-label">Model:</div>
         <div class="selector-options">
           <select id="model-selector" class="model-selector">
-            <option value="gpt-4">GPT-4</option>
-            <option value="gpt-4-turbo">GPT-4 Turbo</option>
-            <option value="gpt-4o">GPT-4o</option>
-            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-            <option value="gpt-3.5-turbo-16k">GPT-3.5 Turbo 16k</option>
+            <optgroup label="Latest Models">
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="gpt-4o-mini">GPT-4o Mini</option>
+              <option value="gpt-4-turbo">GPT-4 Turbo</option>
+              <option value="gpt-4">GPT-4</option>
+              <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+            </optgroup>
+            <optgroup label="Specialized Models">
+              <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo (04/09)</option>
+              <option value="gpt-3.5-turbo-16k">GPT-3.5 Turbo 16k</option>
+              <option value="gpt-4-mini">GPT-4 Mini</option> 
+              <option value="gpt-4-mini-high">GPT-4 Mini High</option>
+            </optgroup>
+            <optgroup label="Legacy Versions">
+              <option value="gpt-4-0314">GPT-4 03</option>
+              <option value="gpt-4-0413">GPT-4 04</option>
+            </optgroup>
+            <optgroup label="Experimental Models">
+              <option value="gpt-40">GPT-40</option>
+              <option value="gpt-4.5">GPT-4.5</option>
+              <option value="gpt-01-pro">01 Pro Mode</option>
+              <option value="gpt-4-A">GPT-4 A</option>
+            </optgroup>
           </select>
         </div>
       </div>
