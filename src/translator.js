@@ -1,10 +1,18 @@
 const { OpenAI } = require('openai');
 require('dotenv').config();
 const { trackUsage } = require('./usage-tracker');
+const logger = require('./logger');
 
+// Configure OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAIKEY
 });
+
+// Default models - can be overridden via environment variables
+const DEFAULT_MODELS = {
+  translation: process.env.TRANSLATION_MODEL || 'gpt-4',
+  conversation: process.env.CONVERSATION_MODEL || 'gpt-4'
+};
 
 const LANGUAGES = {
   en: 'English',
@@ -89,8 +97,13 @@ async function translateMessage(message, targetLang, mode = RESPONSE_MODES.norma
     
     Translation:`;
 
+    // Get the configured model for translation
+    const model = DEFAULT_MODELS.translation;
+    
+    logger.api(`Using model ${model} for translation to ${targetLang}`);
+
     const response = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: model,
       messages: [
         {
           role: "system",
@@ -116,7 +129,7 @@ async function translateMessage(message, targetLang, mode = RESPONSE_MODES.norma
       usage: response.usage || null
     };
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    logger.error('OpenAI API error:', error);
     throw new Error('Translation service error');
   }
 }
@@ -156,8 +169,13 @@ async function conversationResponse(message, targetLang, mode = RESPONSE_MODES.n
       content: message
     });
     
+    // Get the configured model for conversation
+    const model = DEFAULT_MODELS.conversation;
+    
+    logger.api(`Using model ${model} for conversation in ${targetLang}`);
+    
     const response = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: model,
       messages: messages,
       temperature: mode === RESPONSE_MODES.poetic ? 0.7 : 0.3,
       max_tokens: 500
@@ -174,7 +192,7 @@ async function conversationResponse(message, targetLang, mode = RESPONSE_MODES.n
       usage: response.usage || null
     };
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    logger.error('OpenAI API error:', error);
     throw new Error('Conversation service error');
   }
 }
@@ -185,5 +203,6 @@ module.exports = {
   conversationResponse,
   LANGUAGES, 
   RESPONSE_MODES,
-  INTERACTION_TYPES
+  INTERACTION_TYPES,
+  DEFAULT_MODELS
 };

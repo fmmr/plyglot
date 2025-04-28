@@ -29,9 +29,11 @@ const PORT = process.env.PORT || 3000;
 // Only start server if not in test environment
 if (process.env.NODE_ENV !== 'test') {
   server.listen(PORT, () => {
+    const translator = require('./translator');
     logger.server(`Plyglot server started on port ${PORT}`);
-    logger.server(`Available languages: ${Object.keys(require('./translator').LANGUAGES).join(', ')}`);
+    logger.server(`Available languages: ${Object.keys(translator.LANGUAGES).join(', ')}`);
     logger.server(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.server(`Models: translation=${translator.DEFAULT_MODELS.translation}, conversation=${translator.DEFAULT_MODELS.conversation}`);
   });
 }
 

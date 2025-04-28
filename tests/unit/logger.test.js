@@ -2,13 +2,21 @@
  * Logger tests
  */
 
+// Need to do this before importing the logger
+process.env.NODE_ENV = 'development'; // Override test environment for logger tests
+
 const logger = require('../../src/logger');
 
 describe('Logger', () => {
   let originalConsoleLog;
   let mockConsoleLog;
+  let originalNodeEnv;
   
   beforeEach(() => {
+    // Save original NODE_ENV
+    originalNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development'; // Ensure logging is enabled for tests
+    
     // Mock console.log
     originalConsoleLog = console.log;
     mockConsoleLog = jest.fn();
@@ -16,8 +24,9 @@ describe('Logger', () => {
   });
   
   afterEach(() => {
-    // Restore console.log
+    // Restore console.log and NODE_ENV
     console.log = originalConsoleLog;
+    process.env.NODE_ENV = originalNodeEnv;
   });
   
   test('should log a message without data', () => {
@@ -96,5 +105,31 @@ describe('Logger', () => {
     
     const settingsLog = mockConsoleLog.mock.calls[2][0];
     expect(settingsLog).toContain('theme: light → dark');
+  });
+  
+  test('should have color properties', () => {
+    // Check if the logger has proper color properties
+    expect(logger.colors).toBeDefined();
+    expect(logger.colors.server).toBeDefined();
+    expect(logger.colors.error).toBeDefined();
+    expect(logger.reset).toBeDefined();
+  });
+  
+  test('should not log in test environment', () => {
+    // Need to reload logger module with test environment
+    jest.resetModules();
+    process.env.NODE_ENV = 'test';
+    
+    // Require a fresh instance of the logger
+    const testLogger = require('../../src/logger');
+    
+    // Clear mock calls
+    mockConsoleLog.mockClear();
+    
+    // Try logging
+    testLogger.log('test', 'This should not be logged');
+    
+    // Verify console.log was NOT called
+    expect(mockConsoleLog).not.toHaveBeenCalled();
   });
 });

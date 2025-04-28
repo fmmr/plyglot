@@ -176,15 +176,15 @@ describe('ThemeManager', () => {
   });
   
   test('should get current theme with getCurrentTheme method', () => {
-    // Set a theme
-    document.documentElement.setAttribute('data-theme', 'dark');
-    
-    // Initialize theme manager
+    // Initialize theme manager first (this will set light theme by default)
     const themeManager = new ThemeManager({
       toggleElement,
       onThemeChange: onThemeChangeMock,
       storageKey: 'test-theme'
     });
+    
+    // Then explicitly set theme to dark
+    document.documentElement.setAttribute('data-theme', 'dark');
     
     // Get current theme
     const currentTheme = themeManager.getCurrentTheme();
