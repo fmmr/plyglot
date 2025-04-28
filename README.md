@@ -16,6 +16,8 @@ This app was created as an experiment to gain experience with frontend developme
 - Two response styles: Standard and Poetic
 - Real-time communication using OpenAI's GPT models
 - Light and dark theme support with system preference detection
+- Typing indicators to show when responses are being processed
+- Voice input support with speech recognition (in supported browsers)
 - Clean and responsive UI
 
 ## Requirements
@@ -67,7 +69,9 @@ The app will be available at `http://localhost:3000`
    - Converse: Interacts as a chatbot, responding to your messages in context
 5. Type your message in any language
 6. Toggle between light and dark themes using the theme selector
-7. Receive responses in your selected language and style
+7. Use voice input by clicking the microphone button (in supported browsers)
+8. Watch for typing indicators while waiting for responses
+9. Receive responses in your selected language and style
 
 ## Testing
 
