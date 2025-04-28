@@ -41,18 +41,11 @@ function trackUsage(responseUsage, requestType) {
   // Detailed logging if server has logging function
   if (global.log) {
     global.log('usage', `Tracked ${responseUsage.total_tokens} tokens for ${requestType}`, {
-      promptTokens: responseUsage.prompt_tokens,
-      completionTokens: responseUsage.completion_tokens,
-      totalTokens: responseUsage.total_tokens,
-      newTotalTokens: usageStats.totalTokens,
-      tokensAdded: usageStats.totalTokens - oldTotal,
+      totalTokens: usageStats.totalTokens,
       requestType,
       requestCount: requestType === 'translation' ? 
         usageStats.translationRequests : 
-        usageStats.conversationRequests,
-      requestsAdded: (requestType === 'translation' ? 
-        usageStats.translationRequests : 
-        usageStats.conversationRequests) - oldType
+        usageStats.conversationRequests
     });
   }
 }

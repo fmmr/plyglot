@@ -9,15 +9,71 @@ require('dotenv').config();
 // Configure logging
 const DEBUG = process.env.DEBUG || true;
 
-// Enhanced logging function with timestamp and categories
+// Enhanced logging function with timestamp, categories and colors
 function log(category, message, data = null) {
   if (!DEBUG) return;
   
-  const timestamp = new Date().toISOString();
-  const prefix = `[${timestamp}] [${category.toUpperCase()}]`;
+  // Color codes for different categories
+  const colors = {
+    server: '\x1b[36m', // Cyan
+    connection: '\x1b[32m', // Green
+    message: '\x1b[33m', // Yellow
+    api: '\x1b[35m', // Magenta
+    usage: '\x1b[34m', // Blue
+    stats: '\x1b[36m', // Cyan
+    mode: '\x1b[33m', // Yellow
+    settings: '\x1b[33m', // Yellow
+    history: '\x1b[36m', // Cyan
+    error: '\x1b[31m', // Red
+    default: '\x1b[0m' // Reset
+  };
   
+  const reset = '\x1b[0m';
+  const categoryColor = colors[category] || colors.default;
+  
+  // Format timestamp to be shorter: HH:MM:SS
+  const timestamp = new Date().toISOString().slice(11, 19);
+  const prefix = `${categoryColor}[${timestamp}] [${category.toUpperCase()}]${reset}`;
+  
+  // Compact data representation based on category
+  let compactData = '';
   if (data) {
-    console.log(`${prefix} ${message}`, data);
+    switch (category) {
+      case 'message':
+        compactData = `lang=${data.targetLang} mode=${data.responseMode} type=${data.interactionType} len=${data.messageLength}`;
+        break;
+      case 'api':
+        if (data.usage) {
+          compactData = `tokens=${data.usage.total_tokens} (in=${data.usage.prompt_tokens}/out=${data.usage.completion_tokens})`;
+        }
+        break;
+      case 'stats':
+        compactData = `total=${data.totalTokens} reqs=${data.totalRequests} avg=${data.avgTokensPerRequest}`;
+        break;
+      case 'usage':
+        compactData = `tokens=${data.totalTokens} type=${data.requestType} count=${data.requestCount}`;
+        break;
+      case 'settings':
+        compactData = `${data.type}: ${data.from} → ${data.to}`;
+        break;
+      default:
+        if (typeof data === 'object') {
+          // Try to extract key info from unknown objects
+          const keyValues = [];
+          Object.keys(data).slice(0, 3).forEach(key => {
+            if (typeof data[key] !== 'object') keyValues.push(`${key}=${data[key]}`);
+          });
+          compactData = keyValues.join(' ');
+          if (Object.keys(data).length > 3) compactData += '...';
+        } else {
+          compactData = String(data);
+        }
+    }
+  }
+  
+  // Output log with compact data
+  if (compactData) {
+    console.log(`${prefix} ${message} - ${compactData}`);
   } else {
     console.log(`${prefix} ${message}`);
   }
@@ -81,10 +137,7 @@ io.on('connection', (socket) => {
       
       // Log the API usage
       log('api', `API call completed in ${apiCallDuration}ms`, {
-        usage: processResult.usage,
-        targetLang,
-        mode: responseMode,
-        interactionType
+        usage: processResult.usage
       });
       
       // If in conversation mode, store the interaction in chat history
@@ -118,7 +171,11 @@ io.on('connection', (socket) => {
         stats: usageStats
       });
       
-      log('stats', `Session usage statistics updated`, usageStats);
+      log('stats', `Session usage statistics updated`, {
+        totalTokens: usageStats.totalTokens,
+        totalRequests: usageStats.translationRequests + usageStats.conversationRequests,
+        avgTokensPerRequest: parseFloat((usageStats.totalTokens / (usageStats.translationRequests + usageStats.conversationRequests)).toFixed(1))
+      });
       
     } catch (error) {
       log('error', `Processing error for client ${socket.id}`, error);
