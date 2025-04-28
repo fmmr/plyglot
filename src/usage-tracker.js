@@ -20,6 +20,12 @@ let usageStats = {
 function trackUsage(responseUsage, requestType) {
   if (!responseUsage) return;
   
+  // Get old totals for logging
+  const oldTotal = usageStats.totalTokens;
+  const oldType = requestType === 'translation' ? 
+    usageStats.translationRequests : 
+    usageStats.conversationRequests;
+  
   // Update token counts
   usageStats.totalTokens += responseUsage.total_tokens || 0;
   usageStats.promptTokens += responseUsage.prompt_tokens || 0;
@@ -30,6 +36,24 @@ function trackUsage(responseUsage, requestType) {
     usageStats.translationRequests++;
   } else if (requestType === 'conversation') {
     usageStats.conversationRequests++;
+  }
+  
+  // Detailed logging if server has logging function
+  if (global.log) {
+    global.log('usage', `Tracked ${responseUsage.total_tokens} tokens for ${requestType}`, {
+      promptTokens: responseUsage.prompt_tokens,
+      completionTokens: responseUsage.completion_tokens,
+      totalTokens: responseUsage.total_tokens,
+      newTotalTokens: usageStats.totalTokens,
+      tokensAdded: usageStats.totalTokens - oldTotal,
+      requestType,
+      requestCount: requestType === 'translation' ? 
+        usageStats.translationRequests : 
+        usageStats.conversationRequests,
+      requestsAdded: (requestType === 'translation' ? 
+        usageStats.translationRequests : 
+        usageStats.conversationRequests) - oldType
+    });
   }
 }
 

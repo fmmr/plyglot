@@ -39,6 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // Set selected language
       selectedLang = button.getAttribute('data-lang');
       
+      // Notify server about language change
+      socket.emit('settings change', {
+        type: 'language',
+        from: previousLang,
+        to: selectedLang,
+        timestamp: new Date().toISOString()
+      });
+      
       // If in conversation mode and language changed, add a system message
       if (selectedInteraction === 'conversation' && previousLang !== selectedLang) {
         addSystemMessage(`Language changed to ${selectedLang.toUpperCase()}. Responses will now be in ${getLangName(selectedLang)}.`);
@@ -61,6 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // Set selected mode
       selectedMode = button.getAttribute('data-mode');
       
+      // Notify server about mode change
+      socket.emit('settings change', {
+        type: 'style',
+        from: previousMode,
+        to: selectedMode,
+        timestamp: new Date().toISOString()
+      });
+      
       // If in conversation mode and mode changed, add a system message
       if (selectedInteraction === 'conversation' && previousMode !== selectedMode) {
         addSystemMessage(`Style changed to ${selectedMode.toUpperCase()}. Responses will now be in ${selectedMode} style.`);
@@ -82,6 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Set selected interaction type
       selectedInteraction = button.getAttribute('data-interaction');
+      
+      // Notify server about interaction type change
+      socket.emit('settings change', {
+        type: 'interaction',
+        from: previousInteraction,
+        to: selectedInteraction,
+        timestamp: new Date().toISOString()
+      });
       
       // Update placeholder text based on interaction type
       if (selectedInteraction === 'translate') {
@@ -280,6 +304,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Save preference
     localStorage.setItem('plyglot-theme', newTheme);
+    
+    // Notify server about theme change
+    socket.emit('settings change', {
+      type: 'theme',
+      from: currentTheme,
+      to: newTheme,
+      timestamp: new Date().toISOString()
+    });
     
     // Add system message
     addSystemMessage(`Switched to ${newTheme.toUpperCase()} theme`);
